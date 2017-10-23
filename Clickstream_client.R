@@ -16,6 +16,9 @@ colnames(frame1) = paste0('feat_', 1:nFeatures)
 
 usePackage('rpart') # load library
 # load('SavedModel.rda')  # load the tree model saved during offline preparation
+usePackage('caret') # load library
+load('fit2.rda')  # load the tree model saved during offline preparation
+
 
 
 # user defined handler
@@ -33,18 +36,20 @@ new_visitor_handler <- function(visitor_id, features) {
     frame1[] <<- features
 
     # generate vector of classification probabilities 
-    prob<- runif(5)
-    prob <- prob/sum(prob)                                                     
 
+   prob <- as.numeric(predict(fit2,frame1,type = 'prob'))
+   # prob <- runif(5)
+   # prob <- prob / sum(prob)
+   # 
     # log id, features and predicted probabilities into global vars
     received_visitors_counter <<- received_visitors_counter + 1
     id_v[received_visitors_counter] <<- visitor_id
     features_m[received_visitors_counter,] <<- features
     prob_m[received_visitors_counter,] <<- prob
-    
+   
     return(prob)
 }
-
+#summary(fit2$finalModel)
 
 # server options
 host <- "datastream.ilykei.com"
